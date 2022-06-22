@@ -1,0 +1,6 @@
+[submodule "extern/pasta-bit-vector"]
+	path = extern/pasta-bit-vector
+	url = https://github.com/pasta-toolbox/bit_vector.git
+[submodule "extern/sdsl-lite"]
+	path = extern/sdsl-lite
+	url = https://github.com/ByteHamster/sdsl-lite.git
