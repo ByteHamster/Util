@@ -1,4 +1,5 @@
 #pragma once
+#include "Function.h"
 
 namespace util {
 class XorShift64 {

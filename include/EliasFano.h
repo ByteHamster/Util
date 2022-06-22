@@ -94,10 +94,9 @@ class EliasFano {
         EliasFano(size_t num, uint64_t universeSize)
                 : L(lowerBits == 0 ? 0 : num), H((universeSize >> lowerBits) + num + 1, false),
                   universeSize(universeSize) {
-            if (abs(log2((double) num) - (log2(universeSize) - lowerBits)) > 1) {
-                std::cerr<<"Warning: Poor choice of bits for EF construction"<<std::endl;
-                std::cerr<<"Universe: "<<universeSize<<std::endl;
-                std::cerr<<"Should be roughly "<<log2(universeSize) - log2((double) num)<<std::endl;
+            if (num != 0 && abs(log2((double) num) - (log2(universeSize) - lowerBits)) > 1) {
+                std::cerr<<"Warning: Poor choice of bits for EF construction."<<std::endl;
+                std::cerr<<"Selected "<<lowerBits<<" but should be "<<log2(universeSize) - log2((double) num)<<std::endl;
             }
         }
 
@@ -137,10 +136,10 @@ class EliasFano {
          * Returns an ElementPointer to the last stored element that is <= the parameter.
          * When multiple duplicate elements are stored, returns the first occurrence.
          */
-        ElementPointer predecessorPosition(uint64_t element) {
+        ElementPointer predecessorPosition(uint64_t element) const {
             assert(element >= at(0));
             if (rankSelect == nullptr) {
-                rankSelect = new pasta::FlatRankSelect<pasta::OptimizedFor::ZERO_QUERIES>(H);
+                throw new std::logic_error("Rank/Select not initialized yet. Missing call to buildRankSelect");
             }
 
             const uint64_t elementH = element >> lowerBits;
@@ -211,7 +210,7 @@ class EliasFano {
             return ptr;
         }
 
-        ElementPointer begin() {
+        ElementPointer begin() const {
             size_t h = 0;
             size_t positionH = 0;
             while (H[positionH] == 0) {
@@ -221,20 +220,26 @@ class EliasFano {
             return ElementPointer(h, positionH, 0, *this);
         }
 
-        uint64_t at(int position) {
+        uint64_t at(int position) const {
             if (rankSelect == nullptr) {
-                rankSelect = new pasta::FlatRankSelect<pasta::OptimizedFor::ZERO_QUERIES>(H);
+                throw new std::logic_error("Rank/Select not initialized yet. Missing call to buildRankSelect");
             }
             uint64_t l = lowerBits == 0 ? 0 : static_cast<const sdsl::int_vector<lowerBits>&>(L)[position];
             uint64_t h = rankSelect->select1(position + 1) - position;
             return (h << lowerBits) + l;
         }
 
-        [[nodiscard]] int space() {
+        void buildRankSelect() {
+            if (rankSelect == nullptr) {
+                rankSelect = new pasta::FlatRankSelect<pasta::OptimizedFor::ZERO_QUERIES>(H);
+            }
+        }
+
+        [[nodiscard]] int space() const {
             return L.capacity()/8 + H.size()/8 + selectStructureOverhead();
         }
 
-        [[nodiscard]] int selectStructureOverhead() {
+        [[nodiscard]] int selectStructureOverhead() const {
             return rankSelect->space_usage();
         }
 };

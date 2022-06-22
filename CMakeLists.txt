@@ -21,6 +21,8 @@ add_subdirectory(extern/sdsl-lite/lib EXCLUDE_FROM_ALL)
 target_include_directories(ByteHamsterUtil SYSTEM INTERFACE extern/sdsl-lite/include)
 target_link_libraries(ByteHamsterUtil INTERFACE sdsl)
 
+set(TLX_INSTALL_INCLUDE_DIR tlx CACHE PATH "Workaround for TLX breaking the first cmake call")
+set(IPS2RA_DISABLE_PARALLEL ON CACHE PATH "FindTBB greps a file that does not exist in recent TBB versions")
 add_subdirectory(extern/pasta-bit-vector EXCLUDE_FROM_ALL)
 target_link_libraries(ByteHamsterUtil INTERFACE pasta_bit_vector)
 target_include_directories(ByteHamsterUtil SYSTEM INTERFACE extern/pasta-bit-vector)
