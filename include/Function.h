@@ -1,4 +1,5 @@
 #pragma once
+#include <cstdint>
 
 namespace util {
 constexpr uint16_t floorlog2(uint16_t x) {

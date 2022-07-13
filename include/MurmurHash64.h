@@ -1,5 +1,9 @@
 #pragma once
 
+#include <cstdint>
+#include <cstddef>
+#include <string>
+
 namespace util {
 static inline uint64_t MurmurHash64(const void * key, int len) {
     const uint64_t m = 0xc6a4a7935bd1e995;
