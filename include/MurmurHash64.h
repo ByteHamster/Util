@@ -56,4 +56,18 @@ static inline uint64_t MurmurHash64Seeded(uint64_t key, uint64_t seed) {
     return MurmurHash64(MurmurHash64(key) ^ seed);
 }
 
+/** David Stafford's (http://zimbry.blogspot.com/2011/09/better-bit-mixing-improving-on.html)
+ * 13th variant of the 64-bit finalizer function in Austin Appleby's
+ * MurmurHash3 (https://github.com/aappleby/smhasher).
+ *
+ * @param z a 64-bit integer.
+ * @return a 64-bit integer obtained by mixing the bits of `z`.
+ */
+
+uint64_t inline remix(uint64_t z) {
+    z = (z ^ (z >> 30)) * 0xbf58476d1ce4e5b9;
+    z = (z ^ (z >> 27)) * 0x94d049bb133111eb;
+    return z ^ (z >> 31);
+}
+
 } // Namespace util
