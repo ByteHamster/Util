@@ -7,11 +7,18 @@
 #include <pasta/bit_vector/support/flat_rank_select.hpp>
 
 namespace util {
+/**
+ * Compressed, monotone integer array.
+ * Commonly used to store the positions of 1-bits in sparse bit vectors.
+ * @tparam lowerBits The number of bits to store in the _lower_ part of the data structure.
+ *                   For best space efficiency, the _upper_ part gets log(n) bits.
+ */
 template <int lowerBits>
 class EliasFano {
     static_assert(lowerBits >= 0);
     private:
         sdsl::int_vector<lowerBits> L;
+        using ConstIntVector = const sdsl::int_vector<lowerBits>;
         pasta::BitVector H;
         size_t count = 0;
         size_t universeSize = 0;
@@ -75,10 +82,10 @@ class EliasFano {
 
                 uint64_t operator *() {
                     assert(positionL < fano->count);
-                    if constexpr(lowerBits == 0) {
+                    if constexpr (lowerBits == 0) {
                         return h;
                     }
-                    uint64_t l = static_cast<const sdsl::int_vector<lowerBits>&>(fano->L)[positionL];
+                    uint64_t l = static_cast<ConstIntVector&>(fano->L)[positionL];
                     return (h << lowerBits) + l;
                 }
 
@@ -164,7 +171,7 @@ class EliasFano {
             } else if constexpr (lowerBits != 0) {
                 // Look through elements with the same upper bits
                 while (true) {
-                    const uint64_t lower = static_cast<const sdsl::int_vector<lowerBits>&>(L)[positionL];
+                    const uint64_t lower = static_cast<ConstIntVector&>(L)[positionL];
                     if (lower > elementL) {
                         // Return previous item
                         if (positionL > 0) {
@@ -224,7 +231,7 @@ class EliasFano {
             if (rankSelect == nullptr) {
                 throw new std::logic_error("Rank/Select not initialized yet. Missing call to buildRankSelect");
             }
-            uint64_t l = lowerBits == 0 ? 0 : static_cast<const sdsl::int_vector<lowerBits>&>(L)[position];
+            uint64_t l = lowerBits == 0 ? 0 : static_cast<ConstIntVector&>(L)[position];
             uint64_t h = rankSelect->select1(position + 1) - position;
             return (h << lowerBits) + l;
         }
