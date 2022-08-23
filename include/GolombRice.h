@@ -41,10 +41,7 @@ class GolombRice {
                 std::cout<<"Warning: needed to resize the bit vector in Golomb-Rice coding. "
                          <<"Consider increasing the estimatedAverageValue."<<std::endl;
                 size_t oldSize = H.size();
-                H.resize(2 * oldSize);
-                for (size_t i = oldSize; i < H.size(); i++) {
-                    H[i] = 0;
-                }
+                H.resize(2 * oldSize, 0);
             }
             H[positionInH + h] = 1;
             positionInH += h + 1;
