@@ -114,7 +114,7 @@ class EliasFano {
         void add(size_t index, uint64_t element) {
             assert(index < L.size() || lowerBits == 0);
             assert(element < universeSize);
-            uint64_t l = element & ((1l << lowerBits) - 1);
+            uint64_t l = element & MASK_LOWER_BITS;
             uint64_t h = element >> lowerBits;
             assert(element == h*(1l << lowerBits) + l);
             if constexpr (lowerBits != 0) {
@@ -132,7 +132,6 @@ class EliasFano {
                 previousInsert = element;
             #endif
             add(count, element);
-            //assert(at(count - 1) == element); // Very inefficient because it builds a whole select data structure
         }
 
         void invalidateSelectDatastructure() {
@@ -143,10 +142,10 @@ class EliasFano {
          * Returns an ElementPointer to the last stored element that is <= the parameter.
          * When multiple duplicate elements are stored, returns the first occurrence.
          */
-        ElementPointer predecessorPosition(uint64_t element) const {
+        [[nodiscard]] ElementPointer predecessorPosition(uint64_t element) const {
             assert(element >= at(0));
             if (rankSelect == nullptr) {
-                throw new std::logic_error("Rank/Select not initialized yet. Missing call to buildRankSelect");
+                throw std::logic_error("Rank/Select not initialized yet. Missing call to buildRankSelect");
             }
 
             const uint64_t elementH = element >> lowerBits;
@@ -158,6 +157,7 @@ class EliasFano {
                 positionL = 0;
             } else {
                 positionH = rankSelect->select0(elementH) + 1;
+                assert(positionH <= H.size());
                 positionL = positionH - elementH;
                 assert(positionL <= L.size());
             }
@@ -227,7 +227,7 @@ class EliasFano {
             return ElementPointer(h, positionH, 0, *this);
         }
 
-        uint64_t at(int position) const {
+        [[nodiscard]] uint64_t at(int position) const {
             if (rankSelect == nullptr) {
                 throw new std::logic_error("Rank/Select not initialized yet. Missing call to buildRankSelect");
             }
@@ -242,7 +242,10 @@ class EliasFano {
             }
         }
 
-        [[nodiscard]] int space() const {
+        /**
+         * Space usage of this data structure, in bytes.
+         */
+        [[nodiscard]] size_t space() const {
             return L.capacity()/8 + H.size()/8 + selectStructureOverhead();
         }
 
