@@ -53,7 +53,7 @@ class GolombRice {
             delete rankSelect;
         }
 
-        [[nodiscard]] uint64_t at(int position) const {
+        [[nodiscard]] uint64_t at(size_t position) const {
             if (rankSelect == nullptr) {
                 throw std::logic_error("Rank/Select not initialized yet. Missing call to buildRankSelect");
             }
