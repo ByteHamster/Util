@@ -36,9 +36,9 @@ class EliasFano {
                 size_t positionL;
                 size_t positionH;
                 size_t h;
-                EliasFano<lowerBits> *fano;
+                const EliasFano<lowerBits> *fano;
             public:
-                ElementPointer(size_t h, size_t positionH, size_t positionL, EliasFano<lowerBits> &fano)
+                ElementPointer(size_t h, size_t positionH, size_t positionL, const EliasFano<lowerBits> &fano)
                         : positionL(positionL), positionH(positionH), h(h), fano(&fano) {
                     assert(fano.H[positionH] == 1);
                 }
@@ -89,7 +89,11 @@ class EliasFano {
                     return (h << lowerBits) + l;
                 }
 
-                operator size_t() {
+                size_t operator -(const ElementPointer &pointer) const {
+                    return index() - pointer.index();
+                }
+
+                size_t index() const {
                     return positionL;
                 }
         };
