@@ -105,10 +105,12 @@ class EliasFano {
         EliasFano(size_t num, uint64_t universeSize)
                 : L(lowerBits == 0 ? 0 : num), H((universeSize >> lowerBits) + num + 1, false),
                   universeSize(universeSize) {
-            if (num != 0 && abs(log2((double) num) - (log2(universeSize) - lowerBits)) > 1) {
-                std::cerr<<"Warning: Poor choice of bits for EF construction."<<std::endl;
-                std::cerr<<"Selected "<<lowerBits<<" but should be "<<log2(universeSize) - log2((double) num)<<std::endl;
-            }
+            #ifndef NDEBUG
+                if (num != 0 && abs(log2((double) num) - (log2(universeSize) - lowerBits)) > 1) {
+                    std::cerr<<"Warning: Poor choice of bits for EF construction."<<std::endl;
+                    std::cerr<<"Selected "<<lowerBits<<" but should be "<<log2(universeSize) - log2((double) num)<<std::endl;
+                }
+            #endif
         }
 
         /**
