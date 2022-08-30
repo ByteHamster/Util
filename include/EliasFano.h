@@ -149,10 +149,10 @@ class EliasFano {
          * When multiple duplicate elements are stored, returns the first occurrence.
          */
         [[nodiscard]] ElementPointer predecessorPosition(uint64_t element) const {
-            assert(element >= at(0));
             if (rankSelect == nullptr) {
                 throw std::logic_error("Rank/Select not initialized yet. Missing call to buildRankSelect");
             }
+            assert(element >= at(0));
 
             const uint64_t elementH = element >> lowerBits;
             const uint64_t elementL = element & MASK_LOWER_BITS;
