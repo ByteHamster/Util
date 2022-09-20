@@ -18,6 +18,7 @@ target_compile_features(ByteHamsterUtil INTERFACE cxx_std_20)
 add_subdirectory(extern/sdsl-lite/external EXCLUDE_FROM_ALL)
 add_subdirectory(extern/sdsl-lite/include EXCLUDE_FROM_ALL)
 add_subdirectory(extern/sdsl-lite/lib EXCLUDE_FROM_ALL)
+target_compile_options(sdsl PRIVATE -w)
 target_include_directories(ByteHamsterUtil SYSTEM INTERFACE extern/sdsl-lite/include)
 target_link_libraries(ByteHamsterUtil INTERFACE sdsl)
 
