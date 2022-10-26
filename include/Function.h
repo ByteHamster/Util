@@ -36,7 +36,7 @@ static inline uint64_t fastrange64(uint64_t word, uint64_t p) {
             unsigned __int64 *HighProduct
             );
 #else
-    return word % p; // fallback
+    return word / (UINT64_MAX / p); // fallback
 #endif // __SIZEOF_INT128__
 }
 
