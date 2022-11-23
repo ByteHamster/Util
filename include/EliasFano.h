@@ -235,12 +235,11 @@ class EliasFano {
 
         [[nodiscard]] ElementPointer at(size_t position) const {
             if (rankSelect == nullptr) {
-                throw new std::logic_error("Rank/Select not initialized yet. Missing call to buildRankSelect");
+                throw std::logic_error("Rank/Select not initialized yet. Missing call to buildRankSelect");
             }
-            uint64_t l = lowerBits == 0 ? 0 : static_cast<ConstIntVector&>(L)[position];
             uint64_t positionH = rankSelect->select1(position + 1);
             uint64_t h = positionH - position;
-            return ElementPointer(h, positionH, l, *this);
+            return ElementPointer(h, positionH, position, *this);
         }
 
         void buildRankSelect() {
