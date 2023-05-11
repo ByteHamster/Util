@@ -1,5 +1,6 @@
 #pragma once
 #include "Function.h"
+#include <cstdint>
 
 namespace util {
 class XorShift64 {

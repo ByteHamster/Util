@@ -3,6 +3,7 @@
 #include <sys/ioctl.h>
 #include <linux/fs.h>
 #include <sys/stat.h>
+#include <cstdint>
 
 namespace util {
 static std::string prettyBytes(size_t bytes) {
