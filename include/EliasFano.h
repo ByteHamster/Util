@@ -153,7 +153,7 @@ class EliasFano {
             if (rankSelect == nullptr) {
                 throw std::logic_error("Rank/Select not initialized yet. Missing call to buildRankSelect");
             }
-            assert(element >= at(0));
+            assert(element >= *at(0));
 
             const uint64_t elementH = element >> lowerBits;
             const uint64_t elementL = element & MASK_LOWER_BITS;
@@ -203,9 +203,9 @@ class EliasFano {
                 positionH--;
                 resultH--;
             }
-            assert(at(positionL) <= element);
-            assert(positionL == count - 1 || at(positionL + 1) >= element);
-            assert(positionL == 0 || at(positionL - 1) < element);
+            assert(*at(positionL) <= element);
+            assert(positionL == count - 1 || *at(positionL + 1) >= element);
+            assert(positionL == 0 || *at(positionL - 1) < element);
 
             ElementPointer ptr(resultH, positionH, positionL, *this);
             #ifndef NDEBUG
