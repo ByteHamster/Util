@@ -13,7 +13,7 @@ endif()
 if(NOT TARGET ByteHamsterUtil)
     add_library(ByteHamsterUtil INTERFACE)
     target_include_directories(ByteHamsterUtil INTERFACE include)
-    target_compile_options(ByteHamsterUtil INTERFACE -Wall -Wextra -Wpedantic)
+    target_compile_options(ByteHamsterUtil INTERFACE $<$<COMPILE_LANGUAGE:CXX>:-Wall -Wextra -Wpedantic>)
     target_compile_features(ByteHamsterUtil INTERFACE cxx_std_20)
 
     add_subdirectory(extern/sdsl-lite/external EXCLUDE_FROM_ALL)
