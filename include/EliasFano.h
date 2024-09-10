@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <cassert>
+#include <iostream>
 #include <sdsl/bit_vectors.hpp>
 #include <pasta/bit_vector/bit_vector.hpp>
 #include <pasta/bit_vector/support/flat_rank_select.hpp>
@@ -112,6 +113,35 @@ class EliasFano {
                     std::cerr<<"Selected "<<lowerBits<<" but should be "<<log2(universeSize) - log2((double) num)<<std::endl;
                 }
             #endif
+        }
+
+        explicit EliasFano(std::istream &is) {
+            uint64_t TAG;
+            is.read(reinterpret_cast<char *>(&TAG), sizeof(TAG));
+            assert(TAG == 0xE11a5fac0);
+            is.read(reinterpret_cast<char *>(&count), sizeof(count));
+            is.read(reinterpret_cast<char *>(&universeSize), sizeof(universeSize));
+            size_t size;
+            is.read(reinterpret_cast<char *>(&size), sizeof(size));
+            L.bit_resize(size);
+            is.read(reinterpret_cast<char *>(L.data()), (L.capacity() >> 6) * sizeof(uint64_t));
+            is.read(reinterpret_cast<char *>(&size), sizeof(size));
+            H.resize(size);
+            is.read(reinterpret_cast<char *>(H.data().data()), H.data().size_bytes());
+            buildRankSelect();
+        }
+
+        void writeTo(std::ostream &os) {
+            uint64_t TAG = 0xE11a5fac0;
+            os.write(reinterpret_cast<const char *>(&TAG), sizeof(TAG));
+            os.write(reinterpret_cast<const char *>(&count), sizeof(count));
+            os.write(reinterpret_cast<const char *>(&universeSize), sizeof(universeSize));
+            size_t size = L.bit_size();
+            os.write(reinterpret_cast<const char *>(&size), sizeof(size));
+            os.write(reinterpret_cast<const char *>(L.data()), (L.capacity() >> 6) * sizeof(uint64_t));
+            size = H.size();
+            os.write(reinterpret_cast<const char *>(&size), sizeof(size));
+            os.write(reinterpret_cast<const char *>(H.data().data()), H.data().size_bytes());
         }
 
         /**
