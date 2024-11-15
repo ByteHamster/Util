@@ -3,12 +3,14 @@
 #include <vector>
 #include <cassert>
 #include <iostream>
-#include <sdsl/bit_vectors.hpp>
+#include <cstdint>
+#include <cmath>
+
 #include <pasta/bit_vector/bit_vector.hpp>
 #include <pasta/bit_vector/support/flat_rank_select.hpp>
-#include <cstdint>
+#include "IntVector.h"
 
-namespace util {
+namespace bytehamster::util {
 /**
  * Compressed, monotone integer array.
  * Commonly used to store the positions of 1-bits in sparse bit vectors.
@@ -19,8 +21,7 @@ template <int lowerBits>
 class EliasFano {
     static_assert(lowerBits >= 0);
     private:
-        sdsl::int_vector<lowerBits> L;
-        using ConstIntVector = const sdsl::int_vector<lowerBits>;
+        IntVector<lowerBits> L;
         pasta::BitVector H;
         size_t count = 0;
         size_t universeSize = 0;
@@ -87,7 +88,7 @@ class EliasFano {
                     if constexpr (lowerBits == 0) {
                         return h;
                     }
-                    uint64_t l = static_cast<ConstIntVector&>(fano->L)[positionL];
+                    uint64_t l = fano->L.at(positionL);
                     return (h << lowerBits) + l;
                 }
 
@@ -155,7 +156,7 @@ class EliasFano {
             uint64_t h = element >> lowerBits;
             assert(element == h*(1l << lowerBits) + l);
             if constexpr (lowerBits != 0) {
-                L[index] = l;
+                L.set(index, l);
             }
             assert(h + index < H.size());
             H[h + index] = true;
@@ -208,7 +209,7 @@ class EliasFano {
             } else if constexpr (lowerBits != 0) {
                 // Look through elements with the same upper bits
                 while (true) {
-                    const uint64_t lower = static_cast<ConstIntVector&>(L)[positionL];
+                    const uint64_t lower = L.at(positionL);
                     if (lower > elementL) {
                         // Return previous item
                         if (positionL > 0) {
@@ -283,7 +284,7 @@ class EliasFano {
          * Space usage of this data structure, in bytes.
          */
         [[nodiscard]] size_t space() const {
-            return L.capacity()/8 + H.size()/8 + selectStructureOverhead();
+            return L.dataSizeBytes() + H.size()/8 + selectStructureOverhead();
         }
 
         [[nodiscard]] int selectStructureOverhead() const {

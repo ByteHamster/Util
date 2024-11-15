@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.25)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 project(ByteHamsterUtil
@@ -11,7 +11,7 @@ if(TARGET ByteHamsterUtil)
     return()
 endif()
 
-if(CMAKE_BUILD_TYPE STREQUAL "Release" AND CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+if(CMAKE_BUILD_TYPE STREQUAL "Release" AND PROJECT_IS_TOP_LEVEL)
     add_compile_options(-march=native)
 endif()
 
@@ -20,16 +20,16 @@ target_include_directories(ByteHamsterUtil INTERFACE include)
 target_compile_options(ByteHamsterUtil INTERFACE $<$<COMPILE_LANGUAGE:CXX>:-Wall -Wextra -Wpedantic>)
 target_compile_features(ByteHamsterUtil INTERFACE cxx_std_20)
 
-add_subdirectory(extern/sdsl-lite/external EXCLUDE_FROM_ALL)
-add_subdirectory(extern/sdsl-lite/include EXCLUDE_FROM_ALL)
-add_subdirectory(extern/sdsl-lite/lib EXCLUDE_FROM_ALL)
-target_compile_options(sdsl PRIVATE -w)
-target_include_directories(ByteHamsterUtil SYSTEM INTERFACE extern/sdsl-lite/include)
-target_link_libraries(ByteHamsterUtil INTERFACE sdsl)
-
 set(TLX_INSTALL_INCLUDE_DIR tlx CACHE PATH "Workaround for TLX breaking the first cmake call")
 set(IPS2RA_DISABLE_PARALLEL ON CACHE PATH "FindTBB greps a file that does not exist in recent TBB versions")
-add_subdirectory(extern/pasta-bit-vector EXCLUDE_FROM_ALL)
-target_compile_options(tlx PRIVATE -w)
+add_subdirectory(extern/pasta-bit-vector SYSTEM EXCLUDE_FROM_ALL)
 target_link_libraries(ByteHamsterUtil INTERFACE pasta_bit_vector)
-target_include_directories(ByteHamsterUtil SYSTEM INTERFACE extern/pasta-bit-vector)
+
+add_library(ByteHamster::Util ALIAS ByteHamsterUtil)
+
+if(PROJECT_IS_TOP_LEVEL)
+    target_compile_options(ByteHamsterUtil INTERFACE $<$<COMPILE_LANGUAGE:CXX>:-Wall -Wextra -Wpedantic -Werror>)
+
+    add_executable(Example src/example.cpp)
+    target_link_libraries(Example PRIVATE ByteHamsterUtil)
+endif()

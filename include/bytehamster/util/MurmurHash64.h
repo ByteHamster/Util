@@ -4,7 +4,7 @@
 #include <cstddef>
 #include <string>
 
-namespace util {
+namespace bytehamster::util {
 static inline uint64_t MurmurHash64(const void * key, int len) {
     const uint64_t m = 0xc6a4a7935bd1e995;
     const size_t seed = 1203989050u;

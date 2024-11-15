@@ -1,8 +1,9 @@
 #pragma once
-#include "Function.h"
-#include <cstdint>
 
-namespace util {
+#include <cstdint>
+#include "Function.h"
+
+namespace bytehamster::util {
 class XorShift64 {
     private:
         uint64_t x64;

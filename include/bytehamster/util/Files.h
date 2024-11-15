@@ -1,11 +1,15 @@
 #pragma once
 
+#include <string>
 #include <sys/ioctl.h>
 #include <linux/fs.h>
 #include <sys/stat.h>
+#include <unistd.h>
+#include <fcntl.h>
 #include <cstdint>
+#include <cassert>
 
-namespace util {
+namespace bytehamster::util {
 static std::string prettyBytes(size_t bytes) {
     const char* suffixes[7];
     suffixes[0] = " B";

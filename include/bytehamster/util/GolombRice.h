@@ -2,12 +2,13 @@
 
 #include <vector>
 #include <cassert>
-#include <sdsl/bit_vectors.hpp>
-#include <pasta/bit_vector/bit_vector.hpp>
-#include <pasta/bit_vector/support/flat_rank_select.hpp>
 #include <cstdint>
 
-namespace util {
+#include <pasta/bit_vector/bit_vector.hpp>
+#include <pasta/bit_vector/support/flat_rank_select.hpp>
+#include "IntVector.h"
+
+namespace bytehamster::util {
 /**
  * Compressed integer array.
  * @tparam lowerBits The number of bits to store in the _lower_ part of the data structure.
@@ -16,8 +17,7 @@ template <int lowerBits>
 class GolombRice {
     static_assert(lowerBits >= 0);
     private:
-        sdsl::int_vector<lowerBits> L;
-        using ConstIntVector = const sdsl::int_vector<lowerBits>;
+        IntVector<lowerBits> L;
         pasta::BitVector H;
         size_t positionInH = 0;
         size_t count = 0;
@@ -36,7 +36,7 @@ class GolombRice {
             uint64_t h = element >> lowerBits;
             assert(element == h*(1l << lowerBits) + l);
             if constexpr (lowerBits != 0) {
-                L[count] = l;
+                L.set(count, l);
             }
             if (positionInH + h >= H.size()) {
                 std::cout<<"Warning: needed to resize the bit vector in Golomb-Rice coding. "
@@ -58,7 +58,7 @@ class GolombRice {
             if (rankSelect == nullptr) {
                 throw std::logic_error("Rank/Select not initialized yet. Missing call to buildRankSelect");
             }
-            uint64_t l = lowerBits == 0 ? 0 : static_cast<ConstIntVector&>(L)[position];
+            uint64_t l = lowerBits == 0 ? 0 : L.at(position);
 
             size_t positionH = rankSelect->select1(position + 1);
             assert(positionH < H.size());

@@ -1,7 +1,7 @@
 #pragma once
 #include <cstdint>
 
-namespace util {
+namespace bytehamster::util {
 constexpr uint16_t floorlog2(uint16_t x) {
     return x == 1 ? 0 : 1+floorlog2(x >> 1);
 }
