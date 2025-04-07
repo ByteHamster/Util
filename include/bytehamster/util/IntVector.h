@@ -24,8 +24,8 @@ class IntVector {
         }
 
         [[nodiscard]] uint64_t at(const size_t index) const {
-            const size_t bitIdx = index * elementWidth;
-            const uint8_t offset = bitIdx % 64;
+            size_t bitIdx = index * elementWidth;
+            uint8_t offset = bitIdx % 64;
             const uint64_t* word = &data[bitIdx / 64];
             uint64_t w1 = (*word) >> offset;
             if (offset + elementWidth > 64) {
